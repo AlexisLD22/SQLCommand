@@ -19,7 +19,8 @@ DROP DATABASE IF EXISTS world;
 DROP TABLE email;
 
 ----------------------------------------------------Truncate----------------------------------------------------
-/*Note: permet de supprimer toutes les données d’une table sans supprimer la table en elle-même. En d’autres mots, cela permet de purger la table. De plus, elle réinitialise les auto incrémentation*/
+/*Note: permet de supprimer toutes les données d’une table sans supprimer la table en elle-même. En d’autres mots, 
+cela permet de purger la table. De plus, elle réinitialise les auto incrémentation*/
 
 TRUNCATE TABLE utilisateur_banale
 
