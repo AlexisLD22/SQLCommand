@@ -116,8 +116,7 @@ SELECT DISTINCT name FROM cities WHERE id < 50;
 SELECT name, latitude, longitude FROM cities WHERE latitude BETWEEN 25 AND 49;
 SELECT name, latitude, longitude FROM cities WHERE id BETWEEN 15 AND 25;
 SELECT name, region, id FROM countries WHERE region IN ('Europe', 'Americas') AND id BETWEEN 50 AND 150;
-/*voir avec kevin, car je n'obtiens pas le country_code entre AR et TR*/
-SELECT id, name, country_code FROM cities WHERE (id BETWEEN 50000 AND 100000) AND (country_code BETWEEN 'AR' AND 'TR');
+
 
 --LIKE
 /*
@@ -152,11 +151,93 @@ SELECT name, currency_name, capital FROM countries WHERE currency_name = 'Euro' 
 SELECT name, currency_name, capital FROM countries WHERE region IN ('Europe','Americas');
 SELECT name, currency_name, capital FROM countries WHERE region IN ('Europe','Americas') AND currency_name = 'Euro';
 
+----------------------------------------------------Group by, Rollup, Having----------------------------------------------------
+SELECT state_code, COUNT(*) AS nombre_de_villes FROM cities GROUP BY state_code;
+SELECT state_id, SUM(population) AS population_totale FROM cities GROUP BY state_id;
+SELECT state_id, AVG(altitude) AS altitude_moyenne FROM cities GROUP BY state_id;
+SELECT hire_date, COUNT(hire_date) AS personne_recruter_en_87 FROM employees WHERE hire_date LIKE '1987%' GROUP BY hire_date;
+
+--Rollup
+SELECT hire_date, COUNT(hire_date) FROM employees GROUP BY hire_date WITH ROLLUP;
+SELECT emp_no, salary, from_date, to_date, COUNT(emp_no) AS number_emp FROM employees GROUP BY emp_no WITH ROLLUP;
+SELECT name, COUNT(name LIKE 'A%') AS cities_with_a FROM cities GROUP BY name LIKE 'A%' WITH ROLLUP;
+SELECT region, COUNT(region) FROM countries GROUP BY region WITH ROLLUP;
+
+--Having
+SELECT state_code, COUNT(*) AS nombre_de_villes FROM cities GROUP BY state_code HAVING state_code < 60;
+SELECT state_code, SUM(population) AS population_totale FROM cities GROUP BY state_code HAVING SUM(population) > 1000000;
+SELECT country_id, AVG(longitude) as avg_longitude FROM cities GROUP BY country_id HAVING AVG(longitude) > -90;
+SELECT country_id, AVG(latitude) as avg_latitude FROM cities GROUP BY country_id HAVING AVG(latitude) > 35;
+
+----------------------------------------------------Order by----------------------------------------------------
+SELECT name, state_id FROM cities ORDER BY state_id DESC;
+SELECT name, state_id FROM cities ORDER BY name, state_code DESC;
+SELECT name, numeric_code FROM countries WHERE id BETWEEN 50 AND 125 ORDER BY numeric_code;
+SELECT * FROM states WHERE name LIKE 'Eur%' ORDER BY id DESC;
+SELECT first_name, last_name FROM employees WHERE gender = 'F' ORDER BY last_name;
+SELECT name FROM cities WHERE name LIKE 'A%' ORDER BY name;
+
+----------------------------------------------------Allias----------------------------------------------------
+SELECT state_code, COUNT(*) AS nombre_de_villes FROM cities GROUP BY state_code;
+SELECT state_id, SUM(population) AS population_totale FROM cities GROUP BY state_id;
+SELECT state_id, AVG(altitude) AS altitude_moyenne FROM cities GROUP BY state_id;
+SELECT gender, COUNT(gender) AS number_of_gender FROM employees GROUP BY gender;
+
+----------------------------------------------------Limit Offset----------------------------------------------------
+SELECT * FROM cities LIMIT 150;
+SELECT * FROM cities LIMIT 50 OFFSET 5;
+SELECT * FROM cities LIMIT 66, 150;
+
+----------------------------------------------------Case----------------------------------------------------
+SELECT id, name, state_id, state_code, country_id, country_code, latitude, longitude,
+    CASE
+        WHEN id < 25 THEN '25 Première ville du monde dans l ordre Alphabétique'
+        WHEN state_code = 27 THEN 'les villes avec un state code de 27'
+        ELSE 'tous les autres villes du monde'
+    END
+FROM cities;
+
+----------------------------------------------------Union, all----------------------------------------------------
+SELECT name, longitude, latitude FROM countries
+UNION
+SELECT name, longitude, latitude FROM cities;
+--fictif
+SELECT Pays, Ville, SUM(Montant) AS Total FROM Ventes WHERE Pays = 'France' GROUP BY Pays, Ville
+UNION /*all*/
+SELECT Pays, Ville, SUM(Montant) AS Total FROM Ventes WHERE Pays = 'Germany' GROUP BY Pays, Ville;
+
+--Union All
+SELECT Date, Montant FROM Ventes2019
+UNION ALL
+SELECT Date, Montant FROM Ventes2020;
+
+SELECT Date, Montant FROM Ventes2019 WHERE Produit = 'ProduitA'
+UNION ALL
+SELECT Date, Montant FROM Ventes2020 WHERE Produit = 'ProduitA';
+
+SELECT Date, Montant FROM Ventes2019 WHERE Région = 'RégionA'
+UNION ALL
+SELECT Date, Montant FROM Ventes2019 WHERE Région = 'RégionB'
+UNION ALL
+SELECT Date, Montant FROM Ventes2020 WHERE Région = 'RégionA'
+UNION ALL
+SELECT Date, Montant FROM Ventes2020 WHERE Région = 'RégionB';
+
+
+----------------------------------------------------Intersect----------------------------------------------------
+SELECT Date, Montant FROM Ventes2019
+INTERSECT
+SELECT Date, Montant FROM Ventes2020;
+
+SELECT Date, Montant FROM Ventes2019 WHERE Produit = 'ProduitA'
+INTERSECT
+SELECT Date, Montant FROM Ventes2020 WHERE Produit = 'ProduitA';
+
+
 ----------------------------------------------------TD2----------------------------------------------------
 --Commande SQL pour la création de la base de donnée avec les deux tables: 
 CREATE DATABASE golf;
-CREATE TABLE utilisateurs(
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    CREATE TABLE utilisateurs(W
     firstname VARCHAR(255),
     lastname VARCHAR(255),
     email longtext
