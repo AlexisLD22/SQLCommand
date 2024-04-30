@@ -233,11 +233,90 @@ SELECT Date, Montant FROM Ventes2019 WHERE Produit = 'ProduitA'
 INTERSECT
 SELECT Date, Montant FROM Ventes2020 WHERE Produit = 'ProduitA';
 
+----------------------------------------------------Except----------------------------------------------------
+SELECT name, longitude, latitude FROM cities
+EXCEPT
+SELECT name, longitude, latitude FROM countries;
+
+SELECT Date, Montant FROM Ventes2019
+EXCEPT
+SELECT Date, Montant FROM Ventes2020;
+
+----------------------------------------------------Sous-requete----------------------------------------------------
+SELECT last_name FROM employees AS e WHERE salary >= ALL (SELECT salary FROM employees WHERE department = 'Développement');
+SELECT * FROM countries WHERE region_id = (SELECT id FROM regions WHERE id = 2);
+SELECT * FROM countries WHERE EXISTS (SELECT id FROM regions WHERE name LIKE 'eur%');
+
+----------------------------------------------------All/Any----------------------------------------------------
+SELECT id, name, latitude, longitude FROM cities WHERE latitude != ALL (SELECT latitude FROM countries);
+SELECT last_name FROM employees AS e WHERE salary >= ALL (SELECT salary FROM employees WHERE department = 'Développement');
+
+SELECT first_name, last_name, hire_date FROM employees WHERE hire_date < ANY (SELECT from_date FROM salaries);
+SELECT * FROM cities WHERE state_id = ANY (SELECT id FROM countries);
+SELECT * FROM cities WHERE latitude > ANY (SELECT latitude FROM cities) OR longitude > ANY (SELECT longitude FROM cities);
+SELECT * FROM countries WHERE capital = ANY (SELECT name FROM cities);
+
+----------------------------------------------------Jointure----------------------------------------------------
+
+--INNER JOIN
+SELECT c.name AS city_name,
+       co.name AS country_name,
+       CASE
+           WHEN c.name = co.capital THEN 'Capitale'
+           ELSE 'Non Capitale'
+       END AS capital_status
+FROM cities c
+INNER JOIN countries co ON c.state_id = co.id;
+
+SELECT c.name AS city_name,
+       co.name AS country_name,
+       CASE
+           WHEN c.latitude > 0 THEN 'Nord'
+           WHEN c.latitude < 0 THEN 'Sud'
+           ELSE 'Équateur'
+       END AS latitude_category
+FROM cities c
+INNER JOIN countries co ON c.state_id = co.id;
+
+--CROSS JOIN
+SELECT c.name AS city_name,
+       co.name AS country_name
+FROM cities c
+CROSS JOIN countries co;
+
+--LEFT JOIN
+SELECT c.name AS city_name,
+       co.name AS country_name
+FROM cities c
+LEFT JOIN countries co ON c.state_id = co.id;
+
+
+--RIGHT JOIN
+SELECT c.name AS city_name,
+       co.name AS country_name
+FROM cities c
+RIGHT JOIN countries co ON c.state_id = co.id;
+
+--FULL JOIN
+SELECT c.name AS city_name,
+       co.name AS country_name
+FROM cities c
+LEFT JOIN countries co ON c.state_id = co.id
+UNION ALL
+SELECT c.name AS city_name,
+       co.name AS country_name
+FROM cities c
+RIGHT JOIN countries co ON c.state_id = co.id
+WHERE c.state_id IS NULL;
+--SELF JOIN
+
+--NATURAL JOIN
+
 
 ----------------------------------------------------TD2----------------------------------------------------
 --Commande SQL pour la création de la base de donnée avec les deux tables: 
 CREATE DATABASE golf;
-    CREATE TABLE utilisateurs(W
+    CREATE TABLE utilisateurs(
     firstname VARCHAR(255),
     lastname VARCHAR(255),
     email longtext
